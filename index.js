@@ -1,9 +1,10 @@
 const http = require("http");
 const url = require("url");
 const fs = require("fs"); //filesystem//
+const { v4: uuidv4 } = require("uuid");
 
 const server = http.createServer((req, res) => {
-  res.setHeader("Content-Type", "text/json");
+  res.setHeader("Content-Type", "application/json");
   //   res.statusCode = 200;
   //   res.end("Deu Boa !");
   const parseUrl = url.parse(req.url, true);
@@ -22,6 +23,7 @@ const server = http.createServer((req, res) => {
       const newUser = JSON.parse(body);
       const users = JSON.parse(fs.readFileSync("users.json") || "[]");
       users.push({
+        id: uuidv4(),
         name: newUser.name,
         email: newUser.email,
         age: newUser.age,
@@ -32,7 +34,11 @@ const server = http.createServer((req, res) => {
     // res.end("Meu método é POST!");
   }
 
-  if (method === "DELETE" && path === "/users") {
+  if (method === "DELETE" && path.startsWith === "/users/") {
+    const idDeleteUser = path.split("/")[2];
+    const users = JSON.parse(fs.readFileSync("users.json") || "[]");
+    const updateUser = users.filter((user) => user.id !== idDeleteUser);
+    console.log(idDeleteUser);
     res.end("Meu método é DELETE!");
   }
 
